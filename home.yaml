@@ -129,18 +129,128 @@ areas:
           - id: blog_post_list_container
             type: Comment
             properties:
-              avatar:
-                color: '#1890ff'
-                content:
-                  _state: blog_post_list.$.blog_post_likes
+              _if:
+                test:
+                  _eq:
+                    - _state: blog_post_list.$.blog_post_flair
+                    - Informative
+                then:
+                  avatar:
+                    color: '#122C6A'
+                    content:
+                      _state: blog_post_list.$.blog_post_likes
+                else:
+                  _if:
+                    test:
+                      _eq:
+                        - _state: blog_post_list.$.blog_post_flair
+                        - Update
+                    then:
+                      avatar:
+                        color: '#0044A4'
+                        content:
+                          _state: blog_post_list.$.blog_post_likes
+                    else:
+                      _if:
+                        test:
+                          _eq:
+                            - _state: blog_post_list.$.blog_post_flair
+                            - Fact
+                        then:
+                          avatar:
+                            color: '#005BBF'
+                            content:
+                              _state: blog_post_list.$.blog_post_likes
+                        else:
+                          _if:
+                            test:
+                              _eq:
+                                - _state: blog_post_list.$.blog_post_flair
+                                - Funny
+                            then:
+                              avatar:
+                                color: '#3874DB'
+                                content:
+                                  _state: blog_post_list.$.blog_post_likes
+                            else:
+                              _if:
+                                test:
+                                  _eq:
+                                    - _state: blog_post_list.$.blog_post_flair
+                                    - Patch
+                                then:
+                                  avatar:
+                                    color: '#5A8DF8'
+                                    content:
+                                      _state: blog_post_list.$.blog_post_likes
+                                else:
+                                  avatar:
+                                      color: '#7EABFF'
+                                      content:
+                                        _state: blog_post_list.$.blog_post_likes
             blocks:
               - id: blog_post_list.$.blog_post_flair
                 type: Title
                 properties:
-                  content: 
-                    _state: blog_post_list.$.blog_post_flair
-                  level: 3
-                  color: '#1890ff'
+                  _if:
+                    test:
+                      _eq:
+                        - _state: blog_post_list.$.blog_post_flair
+                        - Informative
+                    then:
+                      content: 
+                        _state: blog_post_list.$.blog_post_flair
+                      level: 4
+                      color: '#122C6A'
+                    else:
+                      _if:
+                        test:
+                          _eq:
+                            - _state: blog_post_list.$.blog_post_flair
+                            - Update
+                        then:
+                          content: 
+                            _state: blog_post_list.$.blog_post_flair
+                          level: 4
+                          color: '#0044A4'
+                        else:
+                          _if:
+                            test:
+                              _eq:
+                                - _state: blog_post_list.$.blog_post_flair
+                                - Fact
+                            then:
+                              content: 
+                                _state: blog_post_list.$.blog_post_flair
+                              level: 4
+                              color: '#005BBF'
+                            else:
+                              _if:
+                                test:
+                                  _eq:
+                                    - _state: blog_post_list.$.blog_post_flair
+                                    - Funny
+                                then:
+                                  content: 
+                                    _state: blog_post_list.$.blog_post_flair
+                                  level: 4
+                                  color: '#3874DB'
+                                else:
+                                  _if:
+                                    test:
+                                      _eq:
+                                        - _state: blog_post_list.$.blog_post_flair
+                                        - Patch
+                                    then:
+                                      content: 
+                                        _state: blog_post_list.$.blog_post_flair
+                                      level: 4
+                                      color: '#5A8DF8'
+                                    else:
+                                      content: 
+                                        _state: blog_post_list.$.blog_post_flair
+                                      level: 4
+                                      color: '#7EABFF'
               - id: blog_post_card
                 type: Card
                 blocks:
@@ -166,8 +276,8 @@ areas:
                   properties:
                     size: small
                     title: Like
-                    color: '#1890ff'
                     icon: LikeOutlined
+                    type: primary
                   events:
                     onClick:
                       - id: set_blog_post_id
@@ -201,8 +311,8 @@ areas:
                   properties:
                     size: small
                     title: Edit
-                    color: '#1890ff'
                     icon: EditOutlined
+                    type: primary
                   events:
                     onClick:
                       - id: edit_blog_post_link

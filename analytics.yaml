@@ -61,9 +61,9 @@ areas:
                 - type: PieSeries
                   alignLabels: false # Needed for bent labels
                   ticks:
-                    disabled: true # Remove label ticks
+                    disabled: false
                   labels:
-                    bent: true
+                    bent: false
                     fontSize: 12
                     text: "{category}"
                   dataFields:
@@ -95,9 +95,9 @@ areas:
                 - type: PieSeries
                   alignLabels: false # Needed for bent labels
                   ticks:
-                    disabled: true # Remove label ticks
+                    disabled: false
                   labels:
-                    bent: true
+                    bent: false
                     fontSize: 12
                     text: "{category}"
                   dataFields:
