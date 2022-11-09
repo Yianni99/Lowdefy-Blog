@@ -1,0 +1,231 @@
+id: home
+type: PageHeaderMenu
+properties:
+  title: Home # The title in the browser tab.
+layout:
+  contentJustify: center # Center the contents of the page.
+
+requests:
+  - id: get_blog_posts
+    type: MongoDBFind
+    connectionId: blog_posts
+    properties:
+      query:
+        blog_post_title:
+          $ne: null
+      options:
+        sort:
+          - - updated_at
+            - -1
+  - id: update_blog_post_likes
+    type: MongoDBUpdateOne # MongoDb updateOne request to update the blog_post.
+    connectionId: blog_posts
+    properties:
+      filter:
+        _id:
+          _state: _id # Select the document that matches the document's _id that is in state.
+      update:
+        $set:
+          blog_post_likes:
+            _sum:
+              - _state: blog_post_likes
+              - 1
+
+events:
+  onEnter:
+    # Get the data from get_blog_posts
+    - id: fetch_blog_posts
+      type: Request
+      params: 
+        - get_blog_posts
+    # Set the data from get_blog_posts
+    - id: set_blog_posts
+      type: SetState
+      params:
+        blog_post_list:
+          _request: get_blog_posts
+
+areas:
+  content:
+    justify: center
+    blocks:
+      - id: content_card
+        type: Card
+        style:
+          maxWidth: 1000
+        blocks:
+          - id: content
+            type: Result
+            properties:
+              title: Welcome to the Lowdefy Blog
+              subTitle: A blog for all things tech related
+              icon:
+                name: RobotOutlined
+                color: '#1890ff'
+            areas:
+              extra:
+                blocks:
+                  - id: signup_button
+                    type: Button
+                    visible:
+                      _eq:
+                        - _user: sub
+                        - null
+                    layout:
+                      span: 3
+                    properties:
+                      size: large
+                      title: Signup
+                      icon: FormOutlined
+                      type: primary
+                    events:
+                      onClick:
+                        - id: login
+                          type: Login
+                          params:
+                            authUrlQueryParams:
+                              screen_hint: signup
+                  - id: login_button
+                    type: Button
+                    visible:
+                      _eq:
+                        - _user: sub
+                        - null
+                    layout:
+                      span: 3
+                    properties:
+                      size: large
+                      title: Login
+                      icon: LoginOutlined
+                      type: primary
+                    events:
+                      onClick:
+                        - id: link_to_login
+                          type: Link
+                          params: login
+                  - id: logout_button
+                    type: Button
+                    visible:
+                      _ne:
+                        - _user: sub
+                        - null
+                    layout:
+                      span: 3
+                    properties:
+                      size: large
+                      title: Logout
+                      icon: LogoutOutlined
+                      type: primary
+                    events:
+                      onClick:
+                        - id: logout
+                          type: Logout
+      # A List block to display all the blog posts in the blog_post_list state variable
+      - id: blog_post_list
+        type: List
+        style:
+          maxWidth: 1000
+        blocks:
+          - id: blog_post_list_container
+            type: Comment
+            properties:
+              avatar:
+                color: '#1890ff'
+                content:
+                  _state: blog_post_list.$.blog_post_likes
+            blocks:
+              - id: blog_post_list.$.blog_post_flair
+                type: Title
+                properties:
+                  content: 
+                    _state: blog_post_list.$.blog_post_flair
+                  level: 3
+                  color: '#1890ff'
+              - id: blog_post_card
+                type: Card
+                blocks:
+                - id: blog_post_list.$.blog_post_title
+                  type: Title
+                  properties:
+                    content: 
+                      _state: blog_post_list.$.blog_post_title
+                    level: 4
+                - id: blog_post_list.$.blog_post_description
+                  type: Paragraph
+                  properties:
+                    content: 
+                      _state: blog_post_list.$.blog_post_description
+                - id: like_blog_post_button
+                  type: Button
+                  visible:
+                    _eq:
+                      - _user: sub
+                      - null
+                  layout:
+                    span: 2
+                  properties:
+                    size: small
+                    title: Like
+                    color: '#1890ff'
+                    icon: LikeOutlined
+                  events:
+                    onClick:
+                      - id: set_blog_post_id
+                        type: SetState
+                        params:
+                          _id:
+                            _state: blog_post_list.$._id
+                          blog_post_likes:
+                            _state: blog_post_list.$.blog_post_likes
+                      - id: update_blog_post_likes # Call the update_blog_post_likes request.
+                        type: Request
+                        params: update_blog_post_likes
+                      # After liking update blog_post_list
+                      - id: fetch_blog_posts
+                        type: Request
+                        params: 
+                          - get_blog_posts
+                      - id: set_blog_posts
+                        type: SetState
+                        params:
+                          blog_post_list:
+                            _request: get_blog_posts
+                - id: edit_blog_post_button
+                  type: Button
+                  visible:
+                    _ne:
+                      - _user: sub
+                      - null
+                  layout:
+                    span: 2
+                  properties:
+                    size: small
+                    title: Edit
+                    color: '#1890ff'
+                    icon: EditOutlined
+                  events:
+                    onClick:
+                      - id: edit_blog_post_link
+                        type: Link
+                        params:
+                          pageId: edit-blog-post # The page id of the edit blog_post page.
+                          urlQuery:
+                            blog_post_id:
+                              _state: blog_post_list.$._id # Set the blog_post_id in the url query on the edit-blog-post page to the _id field of the clicked list item.
+
+  footer:
+    blocks:
+      - id: footer
+        type: Paragraph
+        properties:
+          type: secondary
+          content: |
+            Made using Lowdefy
+        style:
+          text-align: center
+      - id: block_id
+        type: Icon
+        properties:
+          name: RobotOutlined
+        style:
+          text-align: center

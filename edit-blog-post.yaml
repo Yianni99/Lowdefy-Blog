@@ -1,0 +1,154 @@
+id: edit-blog-post
+type: PageHeaderMenu
+properties:
+  title: Edit Blog Post # The title in the browser tab.
+layout:
+  contentJustify: center # Center the contents of the page.
+
+requests:
+  - id: get_blog_post
+    type: MongoDBFindOne # MongoDb Find One query to get the blog_post data.
+    connectionId: blog_posts
+    properties:
+      query:
+        _id:
+          _url_query: blog_post_id # Query for the blog_post by matching the document in the collection's _id with the blog_post_id passed in the url query as an input from the blog_posts page.
+events:
+  onEnter:
+    # Fetch the blog_post when you enter the page.
+    - id: fetch_blog_post
+      type: Request
+      params: get_blog_post 
+    # Set the page state equal to the the results from our get_blog_post request.
+    # This will set the blog_post field values equal to the values of the blog_post we fetched in our request.
+    - id: set_blog_post_info
+      type: SetState
+      params:
+        _request: get_blog_post 
+
+blocks:
+  - id: content_card
+    type: Card
+    layout:
+      size: 800 # Set the size of the card so it does not fill the full screen.
+      contentGutter: 16 # Make a 16px gap between all blocks in this card.
+    blocks:
+      - id: page_heading
+        type: Title
+        properties:
+          content: Edit blog post # Change the title on the page.
+          level: 3 # Make the title a little smaller (an html `<h3>`).
+      - id: blog_post_title
+        type: TextInput
+        required: true
+        properties:
+          title: Title
+      - id: blog_post_flair
+        type: ButtonSelector
+        required: true
+        properties:
+          title: Flair
+          options: # Set the allowed options
+            - Informative
+            - Update
+            - Fact
+            - Funny
+            - Patch
+            - Feedback
+      - id: blog_post_description
+        type: TextArea
+        required: true
+        properties:
+          title: Description
+      - id: clear_button
+        type: Button
+        layout:
+          span: 8 # Set the size of the button (span 12 of 24 columns)
+        properties:
+          title: Clear
+          block: true # Make the button fill all the space available to it
+          type: default # Make the button a plain button
+          icon: ClearOutlined
+        events:
+          onClick:
+            - id: reset
+              type: Reset
+      - id: delete_button
+        type: Button
+        layout:
+          span: 8 # Set the size of the button (span 12 of 24 columns)
+        properties:
+          title: Delete
+          block: true # Make the button fill all the space available to it
+          type: danger # Make the button a plain button
+          icon: DeleteOutlined
+        events:
+          onClick:
+            - id: open_delete_modal
+              type: CallMethod
+              params:
+                blockId: delete_modal
+                method: open
+      - id: update_button
+        type: Button
+        layout:
+          span: 8
+        properties:
+          title: Update
+          block: true
+          type: primary # Make the button a primary button
+          icon: SaveOutlined
+        requests:
+          - id: update_blog_post
+            type: MongoDBUpdateOne # MongoDb Update One request to update the blog_post.
+            connectionId: blog_posts
+            properties:
+              filter:
+                _id:
+                  _state: _id # Select the document that matches the document's _id that is in state.
+              update:
+                $set:
+                  blog_post_title:
+                    _state: blog_post_title
+                  blog_post_flair:
+                    _state: blog_post_flair
+                  blog_post_description:
+                    _state: blog_post_description
+                  updated_at:
+                    _date: now
+        events:
+          onClick:
+            - id: validate
+              type: Validate
+            - id: update_blog_post # Call the update_blog_post request.
+              type: Request
+              params: update_blog_post
+            - id: link_to_blog_posts # Link back to the blog_posts page.
+              type: Link
+              params:
+                pageId: home
+  - id: delete_modal
+    type: ConfirmModal
+    properties:
+      content: Are you sure you want to delete this blog post? # The text inside the modal.
+      okText: Yes # Change the default text of the ok button to 'Yes'.
+      okButton:
+        type: danger # Change the default type of the ok button to danger.
+      cancelText: No # Change the default text of the cancel button to 'No'.
+    requests:
+      - id: delete_blog_post
+        type: MongoDBDeleteOne # MongoDb Delete One request to delete the blog_post's document from the collection.
+        connectionId: blog_posts
+        properties:
+          filter:
+            _id:
+              _state: _id # Filter the document that matches the document's _id.
+    events:
+      onOk:
+        - id: delete_blog_post # Call the delete_blog_post request.
+          type: Request
+          params: delete_blog_post
+        - id: link_to_blog_posts
+          type: Link
+          params:
+            pageId: home

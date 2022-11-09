@@ -1,0 +1,113 @@
+id: analytics
+type: PageHeaderMenu
+properties:
+  title: Analytics # The title in the browser tab.
+layout:
+  contentJustify: center # Center the contents of the page.
+
+requests:
+  - id: blog_posts_by_flair
+    type: MongoDBAggregation # MongoDB Aggregation to get the data
+    connectionId: blog_posts
+    properties:
+      pipeline:
+        - $group:
+            _id: $blog_post_flair # Group data by the blog_post_flair field
+            count: 
+              $sum: 1 # Count the number of documents by summing 1 for every document
+  - id: blog_posts_by_likes
+    type: MongoDBAggregation # MongoDB Aggregation to get the data
+    connectionId: blog_posts
+    properties:
+      pipeline:
+        - $group:
+            _id: $blog_post_flair # Group data by the blog_post_flair field
+            count: 
+              $sum: $blog_post_likes # Count the number of documents by summing blog_posts_likes for every document
+
+events:
+  onEnter:
+    - id: fetch_data # Fetch the request data before the page renders in order to populate the charts
+      type: Request
+      params: 
+        - blog_posts_by_flair 
+        - blog_posts_by_likes
+
+areas:
+  content:
+    blocks:
+      - id: title # Title on page
+        type: Title
+        properties:
+          content: Blog post analytics
+          level: 4
+        style:
+          text-align: center
+      - id: pie_chart_card_flair
+        type: Card
+        layout:
+          span: 12
+        properties:
+          title: Blog post flair analytics
+        blocks:
+          - id: pie_chart
+            type: AmChartsPie
+            properties:
+              height: 400
+              data:
+                _request: blog_posts_by_flair
+              innerRadius: 50% # Make the chart a donut chart
+              series:
+                - type: PieSeries
+                  alignLabels: false # Needed for bent labels
+                  ticks:
+                    disabled: true # Remove label ticks
+                  labels:
+                    bent: true
+                    fontSize: 12
+                    text: "{category}"
+                  dataFields:
+                    category: _id
+                    value: count
+                  colors: # Add custom colors
+                    list:
+                      - '#122C6A'
+                      - '#0044A4'
+                      - '#005BBF'
+                      - '#3874DB'
+                      - '#5A8DF8'
+                      - '#7EABFF'
+      - id: pie_chart_card_likes
+        type: Card
+        layout:
+          span: 12
+        properties:
+          title: Blog post likes analytics
+        blocks:
+          - id: pie_chart
+            type: AmChartsPie
+            properties:
+              height: 400
+              data:
+                _request: blog_posts_by_likes
+              innerRadius: 50% # Make the chart a donut chart
+              series:
+                - type: PieSeries
+                  alignLabels: false # Needed for bent labels
+                  ticks:
+                    disabled: true # Remove label ticks
+                  labels:
+                    bent: true
+                    fontSize: 12
+                    text: "{category}"
+                  dataFields:
+                    category: _id
+                    value: count
+                  colors: # Add custom colors
+                    list:
+                      - '#122C6A'
+                      - '#0044A4'
+                      - '#005BBF'
+                      - '#3874DB'
+                      - '#5A8DF8'
+                      - '#7EABFF'

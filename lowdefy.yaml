@@ -1,0 +1,63 @@
+
+lowdefy: 3.23.3
+name: Lowdefy starter
+licence: MIT
+
+config:
+  # Always direct users to home.
+  homePageId: home
+  auth:
+    openId:
+      # The url the user should be redirected to after logout.
+      logoutRedirectUri: '{{ openid_domain }}/v2/logout?returnTo={{ host }}/home&client_id={{ client_id }}'
+    pages:
+      # All pages in the app can be seen only by logged in users
+      protected: true
+      # except for the following pages:
+      public:
+        - login
+        - '404'
+        - home
+
+types:
+  AmChartsPie:
+    url: https://blocks-cdn.lowdefy.com/v3.10.1/blocks-amcharts/meta/AmChartsPie.json
+
+connections:
+  - id: blog_posts
+    type: MongoDBCollection
+    properties:
+      databaseUri:
+        _secret: MONGODB_URI
+      databaseName: lowdefy_blog
+      collection: blog_posts
+      write: true
+
+menus:
+  - id: default
+    links:
+      - id: home
+        type: MenuLink
+        properties:
+          icon: HomeOutlined
+          title: Home
+        pageId: home
+      - id: analytics
+        type: MenuLink
+        properties:
+          icon: LineChartOutlined
+          title: Analytics
+        pageId: analytics
+      - id: new-blog-post
+        type: MenuLink
+        properties:
+          icon: FormOutlined
+          title: New Blog Post
+        pageId: new-blog-post
+
+pages:
+  - _ref: home.yaml
+  - _ref: analytics.yaml
+  - _ref: new-blog-post.yaml
+  - _ref: edit-blog-post.yaml
+  - _ref: login.yaml
