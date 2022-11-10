@@ -345,6 +345,15 @@ areas:
                                         _state: blog_post_list.$.blog_post_flair
                                       level: 4
                                       color: '#7EABFF'
+              - id: blog_post_list.$.updated_at
+                type: Html
+                properties:
+                  html:
+                    _nunjucks:
+                      template: |
+                        <p style="font-size: 10px;text-transform: uppercase; font-weight: bold; margin-left: 5px">{{ updated_at | date("lll") }}</p>
+                      on:
+                        _state: blog_post_list.$
               - id: blog_post_card
                 type: Card
                 blocks:
