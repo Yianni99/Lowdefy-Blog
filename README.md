@@ -4,7 +4,7 @@ This is a blog web app example created using the [Lowdefy framework](https://git
 
 This example includes authentication using Auth0 as an OpenID Connect provider, and a MongoDB database connection for storing blog post data. A "single user" Auth0 rule is implemented to only allow a single admin user to signup, login and manage the blog. This rule can be changed to allow multiple users according to any condition or removed to allow users with no restrictions.
 
-The home page with all the blog posts can be accessed by all users with an option for users to like posts anonymously. The analytics, new blog post and edit blog post pages can only be accessed by the logged in admin user.
+The home page with all the blog posts can be accessed by all users with an option for users to like posts anonymously and search through posts. The analytics, new blog post and edit blog post pages can only be accessed by the logged in admin user.
 
 ## MongoDB database setup
 

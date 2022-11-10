@@ -23,72 +23,91 @@ requests:
         updated_at:
           _date: now
 
-blocks:
-  - id: content_card
-    type: Card
-    layout:
-      size: 800 # Set the size of the card so it does not fill the full screen.
-      contentGutter: 16 # Make a 16px gap between all blocks in this card.
+areas:
+  content:
     blocks:
-      - id: page_heading
-        type: Title
-        properties:
-          content: New blog post # Change the title on the page.
-          level: 3 # Make the title a little smaller (an html `<h3>`).
-      - id: blog_post_title
-        type: TextInput
-        required: true
-        properties:
-          title: Title
-      - id: blog_post_flair
-        type: ButtonSelector
-        required: true
-        properties:
-          title: Flair
-          options: # Set the allowed options
-            - Informative
-            - Update
-            - Fact
-            - Funny
-            - Patch
-            - Feedback
-      - id: blog_post_description
-        type: TextArea
-        required: true
-        properties:
-          title: Description
-      - id: clear_button
-        type: Button
+      - id: content_card
+        type: Card
         layout:
-          span: 12 # Set the size of the button (span 12 of 24 columns)
+          size: 800 # Set the size of the card so it does not fill the full screen.
+          contentGutter: 16 # Make a 16px gap between all blocks in this card.
+        blocks:
+          - id: page_heading
+            type: Title
+            properties:
+              content: New blog post # Change the title on the page.
+              level: 3 # Make the title a little smaller (an html `<h3>`).
+          - id: blog_post_title
+            type: TextInput
+            required: true
+            properties:
+              title: Title
+          - id: blog_post_flair
+            type: ButtonSelector
+            required: true
+            properties:
+              title: Flair
+              options: # Set the allowed options
+                - Informative
+                - Update
+                - Fact
+                - Funny
+                - Patch
+                - Feedback
+          - id: blog_post_description
+            type: TextArea
+            required: true
+            properties:
+              title: Description
+          - id: clear_button
+            type: Button
+            layout:
+              span: 12 # Set the size of the button (span 12 of 24 columns)
+            properties:
+              title: Clear
+              block: true # Make the button fill all the space available to it
+              type: default # Make the button a plain button
+              icon: ClearOutlined
+            events:
+              onClick:
+                - id: reset
+                  type: Reset
+          - id: submit_button
+            type: Button
+            layout:
+              span: 12
+            properties:
+              title: Submit
+              block: true
+              type: primary # Make the button a primary button
+              icon: SaveOutlined
+            events:
+              onClick:
+                - id: validate
+                  type: Validate
+                - id: insert_new_blog_post # Make a request to the database
+                  type: Request
+                  params: insert_new_blog_post
+                - id: reset # Reset the form once data has been submitted
+                  type: Reset
+                - id: link_to_blog_posts # Link back to the blog_posts page.
+                  type: Link
+                  params:
+                    pageId: home
+
+  footer:
+    blocks:
+      - id: footer
+        type: Paragraph
         properties:
-          title: Clear
-          block: true # Make the button fill all the space available to it
-          type: default # Make the button a plain button
-          icon: ClearOutlined
-        events:
-          onClick:
-            - id: reset
-              type: Reset
-      - id: submit_button
-        type: Button
-        layout:
-          span: 12
+          type: secondary
+          content: |
+            Made using Lowdefy
+        style:
+          text-align: center
+      - id: block_id
+        type: Icon
         properties:
-          title: Submit
-          block: true
-          type: primary # Make the button a primary button
-          icon: SaveOutlined
-        events:
-          onClick:
-            - id: validate
-              type: Validate
-            - id: insert_new_blog_post # Make a request to the database
-              type: Request
-              params: insert_new_blog_post
-            - id: reset # Reset the form once data has been submitted
-              type: Reset
-            - id: link_to_blog_posts # Link back to the blog_posts page.
-              type: Link
-              params:
-                pageId: home
+          name: RobotOutlined
+        style:
+          text-align: center

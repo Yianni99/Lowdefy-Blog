@@ -111,3 +111,20 @@ areas:
                       - '#3874DB'
                       - '#5A8DF8'
                       - '#7EABFF'
+
+  footer:
+    blocks:
+      - id: footer
+        type: Paragraph
+        properties:
+          type: secondary
+          content: |
+            Made using Lowdefy
+        style:
+          text-align: center
+      - id: block_id
+        type: Icon
+        properties:
+          name: RobotOutlined
+        style:
+          text-align: center

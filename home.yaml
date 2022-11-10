@@ -99,61 +99,67 @@ areas:
             areas:
               extra:
                 blocks:
-                  - id: signup_button
-                    type: Button
-                    visible:
-                      _eq:
-                        - _user: sub
-                        - null
+                  - id: signup_login_box
+                    type: Box
                     layout:
-                      span: 3
-                    properties:
-                      size: large
-                      title: Signup
-                      icon: FormOutlined
-                      type: primary
-                    events:
-                      onClick:
-                        - id: login
-                          type: Login
-                          params:
-                            authUrlQueryParams:
-                              screen_hint: signup
-                  - id: login_button
-                    type: Button
-                    visible:
-                      _eq:
-                        - _user: sub
-                        - null
-                    layout:
-                      span: 3
-                    properties:
-                      size: large
-                      title: Login
-                      icon: LoginOutlined
-                      type: primary
-                    events:
-                      onClick:
-                        - id: link_to_login
-                          type: Link
-                          params: login
-                  - id: logout_button
-                    type: Button
-                    visible:
-                      _ne:
-                        - _user: sub
-                        - null
-                    layout:
-                      span: 3
-                    properties:
-                      size: large
-                      title: Logout
-                      icon: LogoutOutlined
-                      type: primary
-                    events:
-                      onClick:
-                        - id: logout
-                          type: Logout
+                      contentJustify: center
+                      contentGutter: 6
+                    blocks:
+                      - id: signup_button
+                        type: Button
+                        visible:
+                          _eq:
+                            - _user: sub
+                            - null
+                        layout:
+                          span: 5
+                        properties:
+                          size: large
+                          title: Signup
+                          icon: FormOutlined
+                          type: primary
+                        events:
+                          onClick:
+                            - id: login
+                              type: Login
+                              params:
+                                authUrlQueryParams:
+                                  screen_hint: signup
+                      - id: login_button
+                        type: Button
+                        visible:
+                          _eq:
+                            - _user: sub
+                            - null
+                        layout:
+                          span: 5
+                        properties:
+                          size: large
+                          title: Login
+                          icon: LoginOutlined
+                          type: primary
+                        events:
+                          onClick:
+                            - id: link_to_login
+                              type: Link
+                              params: login
+                      - id: logout_button
+                        type: Button
+                        visible:
+                          _ne:
+                            - _user: sub
+                            - null
+                        layout:
+                          span: 5
+                        properties:
+                          size: large
+                          title: Logout
+                          icon: LogoutOutlined
+                          type: primary
+                        events:
+                          onClick:
+                            - id: logout
+                              type: Logout
       # Search box
       - id: search_box
         type: Box
