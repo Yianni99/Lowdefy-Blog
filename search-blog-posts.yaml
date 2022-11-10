@@ -1,0 +1,14 @@
+- id: prepare_search_blog_posts
+  type: SetState
+  params:
+    blog_posts_loading: true
+- id: search
+  type: Request
+  params:
+    - search_blog_posts
+- id: finalize_search_blog_posts
+  type: SetState
+  params:
+    blog_posts_loading: false
+    blog_post_list:
+      _request: search_blog_posts

@@ -30,6 +30,40 @@ requests:
             _sum:
               - _state: blog_post_likes
               - 1
+  - id: search_blog_posts
+    type: MongoDBAggregation
+    connectionId: blog_posts
+    properties:
+      pipeline:
+        - $match:
+            $expr:
+              $and:
+                - $or:
+                  - $ne:
+                      - $indexOfCP:
+                        - $toLower:
+                            $blog_post_title
+                        - $toLower:
+                            $ifNull:
+                              - _state: search_input
+                              - ''
+                      - -1
+                  - $ne:
+                      - $indexOfCP:
+                        - $toLower:
+                            $blog_post_description
+                        - $toLower:
+                            $ifNull:
+                              - _state: search_input
+                              - ''
+                      - -1
+                - $eq:
+                    - $blog_post_flair
+                    - $ifNull:
+                        - _state: flair_selector
+                        - $blog_post_flair
+        - $sort:
+            updated_at: -1
 
 events:
   onEnter:
@@ -120,6 +154,66 @@ areas:
                       onClick:
                         - id: logout
                           type: Logout
+      # Search box
+      - id: search_box
+        type: Box
+        style:
+          maxWidth: 1000
+          margin-top: 20
+        layout:
+          contentGutter: 6
+        blocks:
+          - id: search_input
+            type: TextInput
+            layout:
+              flex: 1 1 auto
+            properties:
+              disabled:
+                _eq:
+                  - _state: blog_posts_loading
+                  - true
+              placeholder: Search blog posts
+              label:
+                disabled: true
+            events:
+              onPressEnter:
+                _ref: search-blog-posts.yaml
+          - id: flair_selector
+            type: Selector
+            layout:
+              span: 3
+            properties:
+              disabled:
+                _eq:
+                  - _state: blog_posts_loading
+                  - true
+              label:
+                disabled: true
+              placeholder: Flair
+              options:
+                - Informative
+                - Update
+                - Fact
+                - Funny
+                - Patch
+                - Feedback
+            events:
+              onChange:
+                _ref: search-blog-posts.yaml
+          - id: search_button
+            type: Button
+            layout:
+              flex: 0 1 auto
+            properties:
+              disabled:
+                _eq:
+                  - _state: blog_posts_loading
+                  - true
+              title: Search
+              icon: SearchOutlined
+            events:
+              onClick:
+                _ref: search-blog-posts.yaml
       # A List block to display all the blog posts in the blog_post_list state variable
       - id: blog_post_list
         type: List
